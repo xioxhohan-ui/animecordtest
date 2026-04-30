@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
 import { servers, members, channels, users } from '@/lib/db/schema';
 import { eq, and, or } from 'drizzle-orm';
