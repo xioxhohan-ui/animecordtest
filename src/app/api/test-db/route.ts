@@ -13,7 +13,7 @@ export async function GET() {
       status: 'ok', 
       database: 'connected',
       latency: `${duration}ms`,
-      driver: 'neon-serverless',
+      driver: 'vercel-postgres',
       is_using_dummy: !process.env.POSTGRES_URL && !process.env.DATABASE_URL,
       env_check: {
         DATABASE_URL: !!process.env.DATABASE_URL,
