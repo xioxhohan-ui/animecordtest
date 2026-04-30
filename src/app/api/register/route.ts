@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { getUnifiedUser, saveUnifiedUser } from '@/lib/db/unified';
 import { hashPassword, signToken } from '@/lib/auth';
 import { nanoid } from 'nanoid';
 
@@ -14,8 +12,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing username or password' }, { status: 400 });
     }
 
-    // Check if username taken
-    const [existing] = await db.select().from(users).where(eq(users.username, username.toLowerCase())).limit(1);
+    // Check if username taken (Unified)
+    const existing = await getUnifiedUser(username);
     if (existing) {
       return NextResponse.json({ error: 'Username taken' }, { status: 400 });
     }
@@ -23,7 +21,7 @@ export async function POST(request: Request) {
     const hashedPassword = await hashPassword(password);
     const userId = nanoid();
 
-    const [newUser] = await db.insert(users).values({
+    const newUser = {
       id: userId,
       username: username.toLowerCase(),
       passwordHash: hashedPassword,
@@ -34,7 +32,10 @@ export async function POST(request: Request) {
       bio: 'New to AnimeCord!',
       deviceId: deviceId || null,
       coins: 10,
-    }).returning();
+      lastActive: new Date()
+    };
+
+    await saveUnifiedUser(newUser);
 
     const token = signToken({ id: newUser.id, username: newUser.username, role: newUser.role });
 

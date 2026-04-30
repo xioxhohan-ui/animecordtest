@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { getUnifiedUserById } from '@/lib/db/unified';
 import { verifyToken } from '@/lib/auth';
 
 export async function getAuthUser(request: Request) {
@@ -11,12 +9,8 @@ export async function getAuthUser(request: Request) {
   const decoded: any = verifyToken(token);
   if (!decoded) return null;
 
-  try {
-    const [user] = await db.select().from(users).where(eq(users.id, decoded.id)).limit(1);
-    return user || null;
-  } catch (error) {
-    return null;
-  }
+  const result = await getUnifiedUserById(decoded.id);
+  return result?.user || null;
 }
 
 export async function validateUser(request: Request) {

@@ -9,7 +9,7 @@ import { eq } from 'drizzle-orm';
  */
 
 export const getUnifiedUser = async (username: string) => {
-  console.log(`[UnifiedDB] Searching for user: ${username}`);
+  console.log(`[UnifiedDB] Searching for user by username: ${username}`);
   try {
     // 1. Try Postgres (Primary)
     const [user] = await postgresDb.select().from(usersSchema).where(eq(usersSchema.username, username.toLowerCase())).limit(1);
@@ -31,6 +31,32 @@ export const getUnifiedUser = async (username: string) => {
   }
 
   console.log(`[UnifiedDB] User not found in any storage: ${username}`);
+  return null;
+};
+
+export const getUnifiedUserById = async (id: string) => {
+  console.log(`[UnifiedDB] Searching for user by ID: ${id}`);
+  try {
+    // 1. Try Postgres (Primary)
+    const [user] = await postgresDb.select().from(usersSchema).where(eq(usersSchema.id, id)).limit(1);
+    if (user) {
+      console.log(`[UnifiedDB] Found user in Postgres by ID: ${id}`);
+      return { user, source: 'postgres' };
+    }
+  } catch (err: any) {
+    console.error(`[UnifiedDB] Postgres failed for ID ${id}:`, err.message);
+  }
+
+  // 2. Try Blob (Fallback)
+  console.log(`[UnifiedDB] Attempting Blob fallback for ID: ${id}`);
+  const users = await loadFromBlob('users') || [];
+  const user = users.find((u: any) => u.id === id);
+  if (user) {
+    console.log(`[UnifiedDB] Found user in Blob fallback by ID: ${id}`);
+    return { user, source: 'blob' };
+  }
+
+  console.log(`[UnifiedDB] User ID not found in any storage: ${id}`);
   return null;
 };
 
