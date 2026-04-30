@@ -22,12 +22,15 @@ export async function saveToBlob(key: string, data: any) {
 
 export async function loadFromBlob(key: string) {
   try {
-    const response = await fetch(`https://${process.env.BLOB_HOSTNAME || 'public.blob.vercel-storage.com'}/db/${key}.json`, {
-      cache: 'no-store'
-    });
+    const { blobs } = await list();
+    const target = blobs.find(b => b.pathname === `db/${key}.json`);
+    if (!target) return null;
+
+    const response = await fetch(target.url, { cache: 'no-store' });
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
+    console.error(`Blob load failed for ${key}:`, error);
     return null;
   }
 }

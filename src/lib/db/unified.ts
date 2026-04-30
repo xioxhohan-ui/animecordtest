@@ -9,19 +9,28 @@ import { eq } from 'drizzle-orm';
  */
 
 export const getUnifiedUser = async (username: string) => {
+  console.log(`[UnifiedDB] Searching for user: ${username}`);
   try {
     // 1. Try Postgres (Primary)
     const [user] = await postgresDb.select().from(usersSchema).where(eq(usersSchema.username, username.toLowerCase())).limit(1);
-    if (user) return { user, source: 'postgres' };
-  } catch (err) {
-    console.error('Postgres failed, falling back to Blob:', err);
+    if (user) {
+      console.log(`[UnifiedDB] Found user in Postgres: ${username}`);
+      return { user, source: 'postgres' };
+    }
+  } catch (err: any) {
+    console.error(`[UnifiedDB] Postgres failed for ${username}:`, err.message);
   }
 
   // 2. Try Blob (Fallback)
+  console.log(`[UnifiedDB] Attempting Blob fallback for: ${username}`);
   const users = await loadFromBlob('users') || [];
   const user = users.find((u: any) => u.username === username.toLowerCase());
-  if (user) return { user, source: 'blob' };
+  if (user) {
+    console.log(`[UnifiedDB] Found user in Blob fallback: ${username}`);
+    return { user, source: 'blob' };
+  }
 
+  console.log(`[UnifiedDB] User not found in any storage: ${username}`);
   return null;
 };
 
