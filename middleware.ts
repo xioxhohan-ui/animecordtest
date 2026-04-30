@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { verifyToken } from '@/lib/auth';
 
 export function middleware(request: NextRequest) {
   const token = request.headers.get('authorization')?.split(' ')[1] || request.cookies.get('token')?.value;
