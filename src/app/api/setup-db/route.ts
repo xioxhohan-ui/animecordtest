@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
 import { nanoid } from 'nanoid';
