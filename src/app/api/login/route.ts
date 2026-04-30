@@ -22,8 +22,8 @@ export async function POST(request: Request) {
       console.error('Database access error:', dbError);
       return NextResponse.json({ 
         error: 'Database connection failed', 
-        details: 'Make sure you have run npm run db:push and your POSTGRES_URL is correct.',
-        message: dbError.message 
+        details: 'Vercel Postgres is not responding. 1. Go to Vercel Dashboard -> Storage -> Connect Postgres. 2. Ensure POSTGRES_URL is set.',
+        technical: dbError.message 
       }, { status: 500 });
     }
 
