@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
@@ -9,6 +9,14 @@ import { LogIn, MessageSquare } from 'lucide-react';
 import { getDeviceFingerprint } from '@/utils/fingerprint';
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -31,7 +39,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (res.ok) {
         login(data.token, data.user);
-        const returnUrl = searchParams.get('returnUrl');
+        const returnUrl = searchParams?.get('returnUrl');
         if (returnUrl) {
           router.push(returnUrl);
         } else if (data.user.role === 'CEO') {

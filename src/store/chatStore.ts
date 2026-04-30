@@ -3,7 +3,7 @@ import { useAuthStore } from './authStore';
 import type { Server, Message, DmMessage, DmConversation, User, Stats } from '../types';
 
 const API = '/api';
-const getToken = () => localStorage.getItem('animecord_token') || '';
+const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('animecord_token') : '') || '';
 const authHeaders = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${getToken()}`,

@@ -18,7 +18,7 @@ function StatusDot({ status }: { status: string }) {
 
 export default function Sidebar() {
   const { user, logout } = useAuthStore();
-  const { servers, activeServerId, dmConversations, setActiveServer, setActiveDmUser, activeDmUserId, createInvite, deleteServer } = useChatStore();
+  const { servers, users, activeServerId, dmConversations, setActiveServer, setActiveDmUser, activeDmUserId, createInvite, deleteServer } = useChatStore();
   const { openProfileModal, openCreateServerModal, openEditServerModal, isMobileSidebarOpen, closeMobileSidebar, toggleMobileSidebar, addToast, openConfirmModal } = useUiStore();
   const { showMenu } = useContextMenuStore();
   const location = useLocation();
@@ -34,7 +34,7 @@ export default function Sidebar() {
   const handleServerIconRightClick = (e: React.MouseEvent, server: import('../../types').Server) => {
     e.preventDefault();
     e.stopPropagation();
-    const items = [
+    const items: import('../ui/ContextMenu').ContextMenuItem[] = [
       {
         label: 'Open Server',
         icon: <MessageSquare className="w-4 h-4" />,

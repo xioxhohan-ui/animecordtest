@@ -7,12 +7,14 @@ import { useUiStore } from '../../store/uiStore';
 
 export default function JoinFormModal({
   inviteCode,
+  serverId,
   onClose,
   onSuccess
 }: {
-  inviteCode: string;
+  inviteCode?: string;
+  serverId?: string;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }) {
   const { joinServerWithData } = useChatStore();
   const { user } = useAuthStore();
@@ -26,10 +28,10 @@ export default function JoinFormModal({
     e.preventDefault();
     if (!gender || !age) return;
     setLoading(true);
-    await joinServerWithData({ inviteCode, gender, age });
+    await joinServerWithData({ inviteCode, serverId, gender, age });
     setLoading(false);
     useUiStore.getState().addToast('Joined server!', 'success');
-    onSuccess();
+    onSuccess?.();
   };
 
   return (

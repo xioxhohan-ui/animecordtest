@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import type { User } from '../types';
 
 const API = '/api';
-const getToken = () => localStorage.getItem('animecord_token') || '';
+const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('animecord_token') : '') || '';
 const authHeaders = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${getToken()}`,
-  'x-device-id': localStorage.getItem('animecord_device_id') || '',
+  'x-device-id': (typeof window !== 'undefined' ? localStorage.getItem('animecord_device_id') : '') || '',
 });
 
 interface AuthState {
@@ -27,10 +27,10 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  token: localStorage.getItem('animecord_token'),
-  isAuthenticated: !!localStorage.getItem('animecord_token'),
+  token: typeof window !== 'undefined' ? localStorage.getItem('animecord_token') : null,
+  isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('animecord_token') : false,
   isLoading: true,
-  deviceId: localStorage.getItem('animecord_device_id'),
+  deviceId: typeof window !== 'undefined' ? localStorage.getItem('animecord_device_id') : null,
 
   setDeviceId: (id) => {
     localStorage.setItem('animecord_device_id', id);
